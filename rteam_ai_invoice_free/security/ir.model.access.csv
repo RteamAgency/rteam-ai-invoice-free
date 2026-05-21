@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rteam_ai_invoice_quota_user,rteam.ai.invoice.quota user,rteam_ai_invoice_free.model_rteam_ai_invoice_quota,account.group_account_invoice,1,1,1,0
+access_rteam_ai_invoice_quota_manager,rteam.ai.invoice.quota manager,rteam_ai_invoice_free.model_rteam_ai_invoice_quota,account.group_account_manager,1,1,1,1
+access_invoice_extract_wizard_user,invoice.extract.wizard user,rteam_ai_invoice_free.model_invoice_extract_wizard,account.group_account_invoice,1,1,1,1
+access_invoice_extract_wizard_line_user,invoice.extract.wizard.line user,rteam_ai_invoice_free.model_invoice_extract_wizard_line,account.group_account_invoice,1,1,1,1
