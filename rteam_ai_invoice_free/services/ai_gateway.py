@@ -22,10 +22,18 @@ def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
 
     Raises UserError on any network or API error so the caller never sees a bare exception.
     """
-    base_url = (
-        env["ir.config.parameter"].sudo().get_param(_GATEWAY_PARAM, _DEFAULT_GATEWAY_URL)
-    ).rstrip("/")
+    config = env["ir.config_parameter"].sudo()
+    base_url = (config.get_param(_GATEWAY_PARAM, _DEFAULT_GATEWAY_URL)).rstrip("/")
     url = "%s/api/rteam-ai-invoice/extract" % base_url
+
+    # database.uuid identifies this Odoo DB to the gateway's per-DB monthly quota
+    # (anti-abuse backstop). Stable per database, not secret.
+    db_uuid = config.get_param("database.uuid", "")
+    module = (
+        env["ir.module.module"].sudo()
+        .search([("name", "=", "rteam_ai_invoice_free")], limit=1)
+    )
+    module_version = module.installed_version or ""
 
     boundary = "----RteamBoundary"
     body_parts = []
@@ -42,7 +50,11 @@ def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
     req = urllib.request.Request(
         url,
         data=body,
-        headers={"Content-Type": "multipart/form-data; boundary=%s" % boundary},
+        headers={
+            "Content-Type": "multipart/form-data; boundary=%s" % boundary,
+            "X-Rteam-Db": db_uuid,
+            "X-Rteam-Module-Version": module_version,
+        },
         method="POST",
     )
 
