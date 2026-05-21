@@ -1,0 +1,11 @@
+# ruff baseline for Odoo modules (seeded by David)
+target-version = "py311"
+line-length = 100
+extend-exclude = [".david-knowledge"]
+
+[lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
