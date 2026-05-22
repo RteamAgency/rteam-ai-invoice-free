@@ -1,6 +1,7 @@
 # Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
 import json
 import logging
+import mimetypes
 import urllib.error
 import urllib.request
 
@@ -12,6 +13,27 @@ _logger = logging.getLogger(__name__)
 _DEFAULT_GATEWAY_URL = "https://rteam.agency"
 _GATEWAY_PARAM = "rteam_ai_invoice.gateway_url"
 _TIMEOUT_SECONDS = 30
+_SUPPORTED_MIME = ("application/pdf", "image/jpeg", "image/png")
+
+
+def _guess_mime(filename: str, file_bytes: bytes) -> str:
+    """Resolve the upload's MIME type for the multipart Content-Type.
+
+    The gateway validates the declared type and rejects application/octet-stream,
+    so we must send the real one. Magic bytes are authoritative (the binary
+    widget's filename can be missing or generic); fall back to the extension.
+    """
+    head = file_bytes[:8]
+    if head[:5] == b"%PDF-":
+        return "application/pdf"
+    if head[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if head == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    guess = mimetypes.guess_type(filename or "")[0]
+    if guess in _SUPPORTED_MIME:
+        return guess
+    return "application/octet-stream"
 
 
 def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
@@ -41,7 +63,7 @@ def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
     body_parts.append(
         ('Content-Disposition: form-data; name="file"; filename="%s"' % filename).encode()
     )
-    body_parts.append(b"Content-Type: application/octet-stream")
+    body_parts.append(("Content-Type: %s" % _guess_mime(filename, file_bytes)).encode())
     body_parts.append(b"")
     body_parts.append(file_bytes)
     body_parts.append(("--%s--" % boundary).encode())
