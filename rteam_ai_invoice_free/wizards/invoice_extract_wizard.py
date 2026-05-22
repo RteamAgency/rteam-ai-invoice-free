@@ -157,17 +157,24 @@ class InvoiceExtractWizard(models.TransientModel):
         This mirrors what Odoo itself uses when you add a line with no product:
         the expense account configured on the default product category. We must
         NOT just grab the first expense-type account by code - in a standard
-        chart that lands on accounts like "Cash Discount Loss". If no company
-        default is configured, return empty and let the user pick: a blank
-        account is better than a wrong one. Version-agnostic across 17/18/19
-        (the property field is read with the right company via with_company)."""
+        chart that lands on accounts like "Cash Discount Loss". Only if no
+        company default exists (a bare DB) do we fall back to any expense
+        account, since Odoo 19 forbids a NULL account on a product line.
+        Version-agnostic across 17/18/19 (the property field is read with the
+        right company via with_company)."""
         company = self.move_id.company_id
         categ = self.env.ref("product.product_category_all", raise_if_not_found=False)
         if categ:
             account = categ.with_company(company).property_account_expense_categ_id
             if account:
                 return account
-        return self.env["account.account"]
+        # Last resort: any expense account, so a draft line is always creatable
+        # (Odoo 19 forbids a NULL account on a product line). A real chart always
+        # has the category default above, so this only triggers on a bare DB; the
+        # user still reviews the line. No version-specific filters here.
+        return self.env["account.account"].search(
+            [("account_type", "=", "expense")], limit=1
+        )
 
     # -------------------------------------------------------------------------
     # Actions
