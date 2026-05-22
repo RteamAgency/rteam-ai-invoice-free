@@ -212,6 +212,32 @@ class TestInvoiceExtractWizard(TransactionCase):
         with self.assertRaises(UserError):
             wizard_no_file.action_extract()
 
+    def test_open_from_move_button_defaults_move_id(self):
+        # Reproduces the real UI path: the "Extract from PDF" button opens the
+        # wizard with default_move_id + active_model/active_id in context, and
+        # the web client creates the record with no explicit move_id. A bad
+        # default_get (returning a "default_move_id" key) raised
+        # KeyError: 'default_move_id' on Odoo 19. move_id must resolve from
+        # context. Covers both the default_ context key and the active_id path.
+        wizard = (
+            self.env["invoice.extract.wizard"]
+            .with_context(
+                default_move_id=self.move.id,
+                active_model="account.move",
+                active_id=self.move.id,
+            )
+            .create({})
+        )
+        self.assertEqual(wizard.move_id, self.move)
+
+        # active_id-only fallback (no default_move_id in context)
+        wizard2 = (
+            self.env["invoice.extract.wizard"]
+            .with_context(active_model="account.move", active_id=self.move.id)
+            .create({})
+        )
+        self.assertEqual(wizard2.move_id, self.move)
+
     def test_confirm_without_extract_raises_user_error(self):
         with self.assertRaises(UserError):
             self.wizard.action_confirm()
