@@ -331,7 +331,12 @@ class InvoiceExtractWizard(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
+        # default_get must return *field names*, never context "default_" keys:
+        # Odoo 19 iterates self._fields[name] over the returned dict and a
+        # "default_move_id" key raises KeyError. Fall back to active_id only
+        # when move_id was not already defaulted (e.g. opened from a record
+        # action that sets active_model/active_id but no default_move_id).
         ctx = self.env.context
-        if "default_move_id" not in res and ctx.get("active_model") == "account.move":
-            res["default_move_id"] = ctx.get("active_id")
+        if "move_id" not in res and ctx.get("active_model") == "account.move" and ctx.get("active_id"):
+            res["move_id"] = ctx.get("active_id")
         return res
