@@ -58,6 +58,7 @@ class TestGatewayClient(TransactionCase):
             captured["url"] = req.full_url
             captured["db_header"] = req.headers.get("X-rteam-db")
             captured["has_version_header"] = "X-rteam-module-version" in req.headers
+            captured["body"] = req.data
             return _FakeResp(json.dumps(_OK_BODY).encode())
 
         with patch(_PATCH_TARGET, side_effect=_fake_urlopen):
@@ -70,7 +71,29 @@ class TestGatewayClient(TransactionCase):
         expected_uuid = self.env["ir.config_parameter"].sudo().get_param("database.uuid", "")
         self.assertEqual(captured["db_header"], expected_uuid)
         self.assertTrue(captured["has_version_header"])
+        # the multipart part must declare the real MIME, not application/octet-stream,
+        # or the gateway rejects the upload ("Unsupported file type"). The gateway
+        # validates the declared Content-Type, so assert the exact wire format here.
+        self.assertIn(b"Content-Type: application/pdf", captured["body"])
+        self.assertNotIn(b"application/octet-stream", captured["body"])
         self.assertEqual(result["vendor"]["name"], "ACME")
+
+    def test_mime_detected_from_magic_bytes_and_extension(self):
+        cases = [
+            (b"%PDF-1.7\n...", "scan.pdf", "application/pdf"),
+            (b"\xff\xd8\xff\xe0junk", "photo.bin", "image/jpeg"),
+            (b"\x89PNG\r\n\x1a\nrest", "x", "image/png"),
+        ]
+        for data, fname, expected in cases:
+            captured = {}
+
+            def _fake(req, timeout=None, _c=captured):
+                _c["body"] = req.data
+                return _FakeResp(json.dumps(_OK_BODY).encode())
+
+            with patch(_PATCH_TARGET, side_effect=_fake):
+                ai_gateway.rteam_ai_extract(self.env, data, fname)
+            self.assertIn(("Content-Type: %s" % expected).encode(), captured["body"])
 
     def test_http_error_maps_to_user_error(self):
         def _raise(req, timeout=None):
