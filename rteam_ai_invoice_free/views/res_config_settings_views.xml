@@ -25,10 +25,6 @@
                                  help="Base URL for the Rteam AI Invoice gateway.">
                             <field name="rteam_ai_invoice_gateway_url"/>
                         </setting>
-                        <setting string="Gateway Key (this company)"
-                                 help="Optional per-company API key override.">
-                            <field name="rteam_ai_invoice_gateway_key"/>
-                        </setting>
                     </block>
                 </app>
             </xpath>
