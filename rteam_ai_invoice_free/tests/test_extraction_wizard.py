@@ -130,6 +130,12 @@ class TestInvoiceExtractWizard(TransactionCase):
         move = self.move
         invoice_lines = move.invoice_line_ids.filtered(lambda line: line.display_type == "product")
         self.assertEqual(len(invoice_lines), 2)
+        # The wizard does not force a GL account; Odoo computes the correct
+        # default expense account. Regression against the old code that forced
+        # the first expense account by code ("Cash Discount Loss").
+        for line in invoice_lines:
+            self.assertTrue(line.account_id, "Odoo should compute a default account")
+            self.assertEqual(line.account_id.account_type, "expense")
 
     def test_action_confirm_sets_vendor(self):
         with patch.object(self._wizard_cls, "_call_ai_gateway", return_value=_EXTRACTION_RESULT):
