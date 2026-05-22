@@ -152,20 +152,22 @@ class InvoiceExtractWizard(models.TransientModel):
         )
 
     def _get_expense_account(self):
-        """Return a sensible default expense account for vendor bill lines."""
+        """Return the company's default expense account for a productless bill line.
+
+        This mirrors what Odoo itself uses when you add a line with no product:
+        the expense account configured on the default product category. We must
+        NOT just grab the first expense-type account by code - in a standard
+        chart that lands on accounts like "Cash Discount Loss". If no company
+        default is configured, return empty and let the user pick: a blank
+        account is better than a wrong one. Version-agnostic across 17/18/19
+        (the property field is read with the right company via with_company)."""
         company = self.move_id.company_id
-        # Try the company's default expense account property
-        account = self.env["account.account"].search(
-            [
-                # account.account is multi-company via company_ids (18+)
-                ("company_ids", "in", company.id),
-                ("account_type", "=", "expense"),
-                # Odoo 19: account.account.deprecated was removed in favour of active
-                ("active", "=", True),
-            ],
-            limit=1,
-        )
-        return account
+        categ = self.env.ref("product.product_category_all", raise_if_not_found=False)
+        if categ:
+            account = categ.with_company(company).property_account_expense_categ_id
+            if account:
+                return account
+        return self.env["account.account"]
 
     # -------------------------------------------------------------------------
     # Actions
