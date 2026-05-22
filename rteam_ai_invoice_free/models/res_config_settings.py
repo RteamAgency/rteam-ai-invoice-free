@@ -9,11 +9,6 @@ class ResConfigSettings(models.TransientModel):
         string="AI Invoice Gateway URL",
         config_parameter="rteam_ai_invoice.gateway_url",
     )
-    rteam_ai_invoice_gateway_key = fields.Char(
-        string="AI Invoice Gateway Key",
-        related="company_id.rteam_ai_invoice_gateway_key",
-        readonly=False,
-    )
     rteam_ai_invoice_quota_used = fields.Integer(
         string="Extractions Used This Month",
         compute="_compute_rteam_ai_invoice_quota",
