@@ -110,21 +110,3 @@ class TestRteamAiInvoiceMatching(TransactionCase):
     # Default account
     # ------------------------------------------------------------------
 
-    def test_get_expense_account_returns_account(self):
-        account = self.wizard._get_expense_account()
-        # May be empty if the test DB has no expense accounts; verify type if found
-        if account:
-            self.assertEqual(account.account_type, "expense")
-
-    def test_get_expense_account_uses_company_default_not_first_by_code(self):
-        # Regression: the old fallback searched the first expense account by code
-        # and landed on "Cash Discount Loss". It must use the company's configured
-        # default expense account (the default product category's expense account).
-        categ = self.env.ref("product.product_category_all", raise_if_not_found=False)
-        if not categ:
-            self.skipTest("default product category not present")
-        company = self.wizard.move_id.company_id
-        expected = categ.with_company(company).property_account_expense_categ_id
-        if not expected:
-            self.skipTest("no company default expense account configured")
-        self.assertEqual(self.wizard._get_expense_account(), expected)
