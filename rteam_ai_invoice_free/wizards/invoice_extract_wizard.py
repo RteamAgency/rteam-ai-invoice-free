@@ -151,31 +151,6 @@ class InvoiceExtractWizard(models.TransientModel):
             limit=1,
         )
 
-    def _get_expense_account(self):
-        """Return the company's default expense account for a productless bill line.
-
-        This mirrors what Odoo itself uses when you add a line with no product:
-        the expense account configured on the default product category. We must
-        NOT just grab the first expense-type account by code - in a standard
-        chart that lands on accounts like "Cash Discount Loss". Only if no
-        company default exists (a bare DB) do we fall back to any expense
-        account, since Odoo 19 forbids a NULL account on a product line.
-        Version-agnostic across 17/18/19 (the property field is read with the
-        right company via with_company)."""
-        company = self.move_id.company_id
-        categ = self.env.ref("product.product_category_all", raise_if_not_found=False)
-        if categ:
-            account = categ.with_company(company).property_account_expense_categ_id
-            if account:
-                return account
-        # Last resort: any expense account, so a draft line is always creatable
-        # (Odoo 19 forbids a NULL account on a product line). A real chart always
-        # has the category default above, so this only triggers on a bare DB; the
-        # user still reviews the line. No version-specific filters here.
-        return self.env["account.account"].search(
-            [("account_type", "=", "expense")], limit=1
-        )
-
     # -------------------------------------------------------------------------
     # Actions
     # -------------------------------------------------------------------------
@@ -241,12 +216,15 @@ class InvoiceExtractWizard(models.TransientModel):
             }
         )
 
-        default_account = self._get_expense_account()
         line_vals = []
         for line in result.get("lines", []):
             rate = line.get("tax_rate", 0)
             tax = self._match_tax(rate)
             raw_score = line.get("confidence", 0)
+            # Leave account_id empty: the AI does not return a GL account, and
+            # Odoo computes the correct default expense account for the line on
+            # confirm (e.g. "Expenses", not the first expense account by code).
+            # The user can still pick a per-line account in the preview.
             line_vals.append(
                 {
                     "wizard_id": self.id,
@@ -255,7 +233,6 @@ class InvoiceExtractWizard(models.TransientModel):
                     "price_unit": line.get("price_unit", 0.0),
                     "tax_rate": rate,
                     "tax_id": tax.id if tax else False,
-                    "account_id": default_account.id if default_account else False,
                     "confidence_raw": raw_score,
                     "confidence": _score_to_level(raw_score),
                 }
@@ -309,12 +286,13 @@ class InvoiceExtractWizard(models.TransientModel):
                 "name": wline.description or "/",
                 "quantity": wline.quantity,
                 "price_unit": wline.price_unit,
-                "account_id": (
-                    wline.account_id.id
-                    if wline.account_id
-                    else self._get_expense_account().id
-                ),
             }
+            # Only force an account if the user picked one; otherwise omit the key
+            # so Odoo computes the correct default expense account. Passing
+            # account_id=False would suppress that compute and, on Odoo 19, leave
+            # a NULL account that violates the move-line check constraint.
+            if wline.account_id:
+                vals["account_id"] = wline.account_id.id
             if wline.tax_id:
                 vals["tax_ids"] = [(4, wline.tax_id.id)]
             line_vals_list.append(vals)
