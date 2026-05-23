@@ -1,4 +1,4 @@
-# Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
+# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
 """Bump existing per-company monthly quota from 5 to 15.
 
 Only rows that still carry the previous default (5) are lifted; admins who

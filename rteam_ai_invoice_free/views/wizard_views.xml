@@ -26,7 +26,7 @@
         <field name="name">invoice.extract.wizard.form</field>
         <field name="model">invoice.extract.wizard</field>
         <field name="arch" type="xml">
-            <form string="Extract Invoice from PDF/JPG">
+            <form string="Extract Bill from PDF/JPG">
                 <field name="state" invisible="1"/>
                 <field name="move_id" invisible="1"/>
 
@@ -51,7 +51,7 @@
                             decoration-danger="confidence_vendor == 'low'"
                         />
                     </group>
-                    <group string="Invoice Header">
+                    <group string="Bill Header">
                         <field name="invoice_number"/>
                         <field name="invoice_date"/>
                         <field name="due_date"/>
