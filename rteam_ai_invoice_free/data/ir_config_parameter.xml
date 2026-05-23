@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="param_rteam_ai_invoice_gateway_url" model="ir.config_parameter">
+        <field name="key">rteam_ai_invoice.gateway_url</field>
+        <field name="value">https://rteam.agency</field>
+    </record>
+</odoo>

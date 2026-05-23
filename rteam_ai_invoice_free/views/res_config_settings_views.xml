@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_rteam_ai_invoice" model="ir.ui.view">
+        <field name="name">res.config.settings.rteam.ai.invoice</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Odoo 17/18 settings use semantic app/block/setting tags, not the
+                 legacy o_settings_container div. -->
+            <xpath expr="//form" position="inside">
+                <app data-string="Rteam AI Bill" string="Rteam AI Bill"
+                     name="rteam_ai_invoice_free">
+                    <block title="Rteam AI Bill (Free)"
+                           name="rteam_ai_invoice_settings_block">
+                        <setting string="Monthly Quota"
+                                 help="Extractions used this month for this company.">
+                            <div class="text-muted">
+                                <field name="rteam_ai_invoice_quota_used" readonly="1"/>
+                                /
+                                <field name="rteam_ai_invoice_quota_limit" readonly="1"/>
+                                extractions used this month.
+                            </div>
+                        </setting>
+                        <setting string="Gateway URL"
+                                 help="Base URL for the Rteam AI Bill gateway.">
+                            <field name="rteam_ai_invoice_gateway_url"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Line items list inside the wizard -->
+    <record id="invoice_extract_wizard_line_list_view" model="ir.ui.view">
+        <field name="name">invoice.extract.wizard.line.list</field>
+        <field name="model">invoice.extract.wizard.line</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="description"/>
+                <field name="quantity"/>
+                <field name="price_unit"/>
+                <field name="tax_rate" string="Tax %"/>
+                <field name="tax_id"/>
+                <field name="account_id"/>
+                <field name="confidence" widget="badge"
+                    decoration-success="confidence == 'high'"
+                    decoration-warning="confidence == 'medium'"
+                    decoration-danger="confidence == 'low'"
+                />
+            </list>
+        </field>
+    </record>
+
+    <!-- Main wizard form -->
+    <record id="invoice_extract_wizard_form_view" model="ir.ui.view">
+        <field name="name">invoice.extract.wizard.form</field>
+        <field name="model">invoice.extract.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Extract Bill from PDF/JPG">
+                <field name="state" invisible="1"/>
+                <field name="move_id" invisible="1"/>
+
+                <!-- Upload state -->
+                <group invisible="state != 'upload'">
+                    <group string="Upload Document">
+                        <field name="attachment_data" filename="attachment_fname" widget="binary"/>
+                        <field name="attachment_fname" invisible="1"/>
+                    </group>
+                </group>
+
+                <!-- Preview state -->
+                <group invisible="state != 'preview'">
+                    <group string="Vendor">
+                        <field name="vendor_name" string="Extracted Name"/>
+                        <field name="vendor_vat" string="Extracted VAT"/>
+                        <field name="partner_id"/>
+                        <field name="create_partner" invisible="not create_partner"/>
+                        <field name="confidence_vendor" widget="badge"
+                            decoration-success="confidence_vendor == 'high'"
+                            decoration-warning="confidence_vendor == 'medium'"
+                            decoration-danger="confidence_vendor == 'low'"
+                        />
+                    </group>
+                    <group string="Bill Header">
+                        <field name="invoice_number"/>
+                        <field name="invoice_date"/>
+                        <field name="due_date"/>
+                        <field name="currency_id"/>
+                        <field name="confidence_dates" widget="badge"
+                            decoration-success="confidence_dates == 'high'"
+                            decoration-warning="confidence_dates == 'medium'"
+                            decoration-danger="confidence_dates == 'low'"
+                            string="Date Confidence"
+                        />
+                    </group>
+                </group>
+                <group string="Lines" invisible="state != 'preview'" col="1">
+                    <field name="line_ids" nolabel="1"/>
+                </group>
+
+                <footer>
+                    <button
+                        name="action_extract"
+                        string="Extract"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state != 'upload'"
+                    />
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state != 'preview'"
+                    />
+                    <button
+                        name="action_extract"
+                        string="Re-extract"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state != 'preview'"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Menu-launched flow: opens the wizard with no record. On Confirm the
+         wizard creates a new draft in_invoice and pre-fills it. -->
+    <record id="action_invoice_extract_wizard_new" model="ir.actions.act_window">
+        <field name="name">Extract Bill from PDF/JPG</field>
+        <field name="res_model">invoice.extract.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="invoice_extract_wizard_form_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_invoice_extract_wizard_new"
+        name="Extract Bill from PDF/JPG"
+        parent="account.menu_finance_payables"
+        action="action_invoice_extract_wizard_new"
+        sequence="25"
+        groups="account.group_account_invoice"
+    />
+</odoo>
