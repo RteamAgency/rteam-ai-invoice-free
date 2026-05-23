@@ -312,7 +312,7 @@ class TestInvoiceExtractWizard(TransactionCase):
         self.assertEqual(new_move.ref, "INV-2026-00847")
         self.assertEqual(action.get("res_id"), new_move.id)
 
-        product_lines = new_move.invoice_line_ids.filtered(lambda l: l.display_type == "product")
+        product_lines = new_move.invoice_line_ids.filtered(lambda line: line.display_type == "product")
         self.assertEqual(len(product_lines), 2)
         for line in product_lines:
             self.assertTrue(line.account_id, "Odoo must compute the default expense account")
