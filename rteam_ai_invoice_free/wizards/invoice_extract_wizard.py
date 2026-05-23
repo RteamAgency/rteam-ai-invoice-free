@@ -58,8 +58,13 @@ class InvoiceExtractWizard(models.TransientModel):
     move_id = fields.Many2one(
         "account.move",
         string="Vendor Bill",
-        required=True,
         ondelete="cascade",
+        help=(
+            "Vendor bill to pre-fill. When opened from a draft bill this is set "
+            "automatically. When opened from the *Extract Bill from PDF/JPG* "
+            "menu it stays empty until Confirm, where a new draft "
+            "in_invoice is created."
+        ),
     )
     state = fields.Selection(
         [("upload", "Upload"), ("preview", "Preview")],
@@ -141,12 +146,15 @@ class InvoiceExtractWizard(models.TransientModel):
         """Return an account.tax for purchase matching the given percentage rate, or empty."""
         if not rate:
             return self.env["account.tax"]
+        # When the wizard is launched from the menu (no move yet) fall back to
+        # the current company instead of dereferencing move_id.company_id.
+        company = self.move_id.company_id or self.env.company
         return self.env["account.tax"].search(
             [
                 ("type_tax_use", "=", "purchase"),
                 ("amount", "=", rate),
                 ("amount_type", "=", "percent"),
-                ("company_id", "=", self.move_id.company_id.id),
+                ("company_id", "=", company.id),
             ],
             limit=1,
         )
@@ -242,10 +250,24 @@ class InvoiceExtractWizard(models.TransientModel):
             self.env["invoice.extract.wizard.line"].create(line_vals)
 
     def action_confirm(self):
-        """Write extracted data onto the vendor bill and close the wizard."""
+        """Write extracted data onto the vendor bill and close the wizard.
+
+        Two launch paths:
+        - From a draft vendor bill: ``move_id`` is set in context; we pre-fill
+          that bill.
+        - From the *Extract Bill from PDF/JPG* menu: ``move_id`` is empty;
+          create a new draft ``in_invoice`` here, then pre-fill it.
+        """
         self.ensure_one()
         if self.state != "preview":
             raise UserError(_("Please run extraction before confirming."))
+
+        if not self.move_id:
+            # Menu-launched flow: create the draft bill on Confirm.
+            self.move_id = self.env["account.move"].create({
+                "move_type": "in_invoice",
+                "company_id": self.env.company.id,
+            })
 
         move = self.move_id
 

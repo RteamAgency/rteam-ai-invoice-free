@@ -2,11 +2,11 @@
   <div style="max-width:960px;margin:0 auto;">
     <h1 style="font-size:42px;margin:0 0 12px;color:#0A1628;letter-spacing:-0.5px;">Stop typing vendor bills</h1>
     <p style="font-size:20px;color:#00D4AA;margin:0 0 24px;font-weight:600;">Drop a PDF, get a draft vendor bill ready for review</p>
-    <p style="font-size:17px;color:#475569;line-height:1.6;max-width:720px;margin:0 auto;">Attach a supplier invoice to a draft bill, click one button, and AI reads the vendor, dates, totals and line items for you. You review and confirm. Nothing posts on its own. 5 free extractions per company every month.</p>
+    <p style="font-size:17px;color:#475569;line-height:1.6;max-width:720px;margin:0 auto;">Attach a supplier invoice to a draft bill, click one button, and AI reads the vendor, dates, totals and line items for you. You review and confirm. Nothing posts on its own. 15 free extractions per company every month.</p>
     <div style="margin-top:28px;">
       <span style="display:inline-block;color:#00D4AA;border:2px solid #00D4AA;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">FREE - LGPL-3</span>
       <span style="display:inline-block;color:#7C5CFC;border:2px solid #7C5CFC;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">Odoo 17 &middot; 18 &middot; 19</span>
-      <span style="display:inline-block;color:#0A1628;border:2px solid #0A1628;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">v1.0.0</span>
+      <span style="display:inline-block;color:#0A1628;border:2px solid #0A1628;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">v1.1.0</span>
     </div>
   </div>
 </section>
@@ -17,7 +17,7 @@
     <p style="font-size:16px;color:#1a1a1a;line-height:1.65;margin:0 0 16px;">Entering vendor bills by hand means retyping the same numbers a supplier already printed on the invoice. This module reads the document and pre-fills the draft for you: vendor name and VAT, invoice number, invoice and due dates, currency, line items and totals.</p>
     <p style="font-size:16px;color:#1a1a1a;line-height:1.65;margin:0 0 16px;">It is a <strong>review-first</strong> tool. The bill stays a draft, every field is yours to correct, and you decide when to post. The only dependency is Odoo Accounting (<code style="background:#f4f5f7;padding:2px 6px;border-radius:3px;font-size:13px;">account</code>).</p>
     <div style="background:#f4f5f7;border-left:4px solid #00D4AA;padding:18px 22px;margin:24px 0;font-size:15px;color:#0A1628;line-height:1.65;">
-      Three things most extraction tools skip, included free: a <strong>confidence score on every field</strong> so you review the uncertain ones first, native <strong>Arabic / RTL</strong> invoice support, and <strong>batch upload</strong> of up to 5 documents at once.
+      Three things most extraction tools skip, included free: a <strong>confidence score on every field</strong> so you review the uncertain ones first, native <strong>Arabic / RTL</strong> invoice support, and <strong>batch upload</strong> of up to 5 documents at once. New in v1.1: a <strong>one-click entry</strong> under <em>Accounting &rarr; Vendors</em> that creates the draft bill from a PDF/JPG for you.
     </div>
   </div>
 </section>
@@ -27,9 +27,9 @@
     <h2 style="font-size:28px;color:#0A1628;margin:0 0 24px;">How it works</h2>
 
     <div style="background:#fff;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
-      <h3 style="color:#0A1628;font-size:20px;margin:0 0 8px;"><span style="color:#00D4AA;">1.</span> Extract from PDF, from the bill you are already on</h3>
-      <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 18px;">Open a draft vendor bill or refund and click <strong>Extract from PDF</strong>. No new menu to learn, no separate inbox. The button only shows on draft incoming invoices, where it belongs.</p>
-      <img src="screenshots/01-extract-button.png" alt="Extract from PDF button on a draft vendor bill" style="width:100%;border-radius:6px;border:1px solid #e1e4e8;"/>
+      <h3 style="color:#0A1628;font-size:20px;margin:0 0 8px;"><span style="color:#00D4AA;">1.</span> Two entry points: from a bill, or from the menu</h3>
+      <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 18px;">Open a draft vendor bill or refund and click <strong>Extract from PDF/JPG</strong>; the button is gated to draft incoming invoices where it belongs. Or use <strong>Accounting &rarr; Vendors &rarr; Extract Bill from PDF/JPG</strong> to drop a file and let the module create the draft bill for you.</p>
+      <img src="screenshots/01-extract-button.png" alt="Extract from PDF/JPG button on a draft vendor bill" style="width:100%;border-radius:6px;border:1px solid #e1e4e8;"/>
     </div>
 
     <div style="background:#fff;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
@@ -45,12 +45,12 @@
 
     <div style="background:#fff;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
       <h3 style="color:#0A1628;font-size:20px;margin:0 0 8px;"><span style="color:#00D4AA;">4.</span> Batch upload, up to 5 at once</h3>
-      <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0;">Drop up to five documents in one go, the same as your monthly free allowance. Each becomes its own draft bill for review. PDF, JPG and PNG are supported.</p>
+      <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0;">Drop up to five documents in one go. Each becomes its own draft bill for review. PDF, JPG and PNG are supported.</p>
     </div>
 
     <div style="background:#fff;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
       <h3 style="color:#0A1628;font-size:20px;margin:0 0 8px;"><span style="color:#00D4AA;">5.</span> Your monthly quota, always visible</h3>
-      <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 18px;">A counter in Settings shows how many of your 5 free extractions you have used this month. Only successful extractions count; a failed attempt is free. The quota resets on the 1st.</p>
+      <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 18px;">A counter in Settings shows how many of your 15 free extractions you have used this month. Only successful extractions count; a failed attempt is free. The quota resets on the 1st.</p>
       <img src="screenshots/03-settings-quota.png" alt="Settings page showing the monthly extraction quota" style="width:100%;border-radius:6px;border:1px solid #e1e4e8;"/>
     </div>
 
@@ -67,7 +67,7 @@
     <ol style="color:#1a1a1a;font-size:16px;line-height:1.7;padding-left:24px;">
       <li style="margin:10px 0;">Apps -&gt; install <strong>Rteam AI Invoice Free</strong>. The only dependency, Odoo Accounting (<code style="background:#f4f5f7;padding:2px 6px;border-radius:3px;font-size:14px;">account</code>), is pulled automatically.</li>
       <li style="margin:10px 0;">That is it. The extraction service is hosted by Rteam and works out of the box, no API key to paste, no account to create.</li>
-      <li style="margin:10px 0;">Open Accounting -&gt; Vendors -&gt; Bills, create or open a draft bill, and click <strong>Extract from PDF</strong>.</li>
+      <li style="margin:10px 0;">Open Accounting -&gt; Vendors -&gt; Bills, create or open a draft bill and click <strong>Extract from PDF/JPG</strong>; or use Accounting -&gt; Vendors -&gt; <strong>Extract Bill from PDF/JPG</strong> to create a new draft directly from a file.</li>
       <li style="margin:10px 0;">Accounting -&gt; Configuration -&gt; Settings -&gt; <strong>Rteam AI Invoice (Free)</strong> shows your monthly usage. Advanced users can point the gateway at their own endpoint or key here.</li>
     </ol>
   </div>
@@ -78,7 +78,8 @@
     <h2 style="font-size:28px;color:#0A1628;margin:0 0 16px;">Technical reference</h2>
     <p style="color:#475569;font-size:14px;line-height:1.65;margin:0 0 24px;">What the module adds and where. Nothing posts automatically, no global access changes, and it uninstalls cleanly.</p>
     <ul style="color:#1a1a1a;font-size:14px;line-height:1.7;padding-left:22px;">
-      <li>Button <strong>Extract from PDF</strong> on <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">account.move</code> (draft <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">in_invoice</code> / <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">in_refund</code> only), gated by the standard Billing access group.</li>
+      <li>Button <strong>Extract from PDF/JPG</strong> on <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">account.move</code> (draft <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">in_invoice</code> / <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">in_refund</code> only), gated by the standard Billing access group.</li>
+      <li>Menu entry <strong>Accounting &rarr; Vendors &rarr; Extract Bill from PDF/JPG</strong> launches the same wizard with no record; on confirm it creates a new draft <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">in_invoice</code>.</li>
       <li>Wizard <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">invoice.extract.wizard</code>: upload, preview with per-field confidence, vendor / tax / account match, confirm into the draft bill.</li>
       <li>Model <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">rteam.ai.invoice.quota</code>: one record per company per month, increments only on a successful extraction, reset by a monthly cron on the 1st.</li>
       <li>Settings page under <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:13px;">res.config.settings</code> with the usage counter and gateway configuration.</li>
@@ -94,7 +95,7 @@
     <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 20px;">This free module covers the full extract-review-confirm loop for low to moderate volume. <strong>Rteam AI Invoice Pro</strong> adds the workflow and automation that high-volume AP teams need.</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;color:#1a1a1a;">
       <tr style="background:#f4f5f7;"><th style="text-align:left;padding:10px 12px;">Capability</th><th style="text-align:left;padding:10px 12px;">Free</th><th style="text-align:left;padding:10px 12px;">Pro</th></tr>
-      <tr><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">Extractions per month</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">5 / company</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Unlimited</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">Extractions per month</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">15 / company</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Unlimited</td></tr>
       <tr><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">Per-field confidence scoring</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Yes</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Yes</td></tr>
       <tr><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">Approval workflow</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#90A4B8;">-</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Multi-step approver chain</td></tr>
       <tr><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">3-way match (PO / receipt / bill)</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#90A4B8;">-</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Yes</td></tr>
