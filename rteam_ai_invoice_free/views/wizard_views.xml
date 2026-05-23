@@ -63,9 +63,9 @@
                             string="Date Confidence"
                         />
                     </group>
-                    <group string="Lines" col="1">
-                        <field name="line_ids" nolabel="1"/>
-                    </group>
+                </group>
+                <group string="Lines" invisible="state != 'preview'" col="1">
+                    <field name="line_ids" nolabel="1"/>
                 </group>
 
                 <footer>
