@@ -26,7 +26,7 @@
         <field name="name">invoice.extract.wizard.form</field>
         <field name="model">invoice.extract.wizard</field>
         <field name="arch" type="xml">
-            <form string="Extract Invoice from PDF">
+            <form string="Extract Invoice from PDF/JPG">
                 <field name="state" invisible="1"/>
                 <field name="move_id" invisible="1"/>
 
@@ -95,4 +95,23 @@
             </form>
         </field>
     </record>
+
+    <!-- Menu-launched flow: opens the wizard with no record. On Confirm the
+         wizard creates a new draft in_invoice and pre-fills it. -->
+    <record id="action_invoice_extract_wizard_new" model="ir.actions.act_window">
+        <field name="name">Extract Bill from PDF/JPG</field>
+        <field name="res_model">invoice.extract.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="invoice_extract_wizard_form_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_invoice_extract_wizard_new"
+        name="Extract Bill from PDF/JPG"
+        parent="account.menu_finance_payables"
+        action="action_invoice_extract_wizard_new"
+        sequence="25"
+        groups="account.group_account_invoice"
+    />
 </odoo>
