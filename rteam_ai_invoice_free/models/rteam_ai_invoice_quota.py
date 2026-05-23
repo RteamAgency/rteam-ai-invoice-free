@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-_DEFAULT_LIMIT = 5
+_DEFAULT_LIMIT = 15
 
 
 class RteamAiInvoiceQuota(models.Model):

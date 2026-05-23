@@ -9,7 +9,7 @@ class AccountMove(models.Model):
         """Open the AI extraction wizard for this vendor bill."""
         self.ensure_one()
         return {
-            "name": "Extract Invoice from PDF",
+            "name": "Extract Invoice from PDF/JPG",
             "type": "ir.actions.act_window",
             "res_model": "invoice.extract.wizard",
             "view_mode": "form",

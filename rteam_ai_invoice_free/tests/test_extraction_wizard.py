@@ -262,3 +262,58 @@ class TestInvoiceExtractWizard(TransactionCase):
         )
         self.assertTrue(partner)
         self.assertEqual(self.move.partner_id.id, partner.id)
+
+    # ------------------------------------------------------------------
+    # Menu-launched flow: wizard opens without a move_id and creates the
+    # draft in_invoice itself on Confirm.
+    # ------------------------------------------------------------------
+
+    def test_menu_launched_wizard_has_no_move_id(self):
+        # The "Extract Bill from PDF/JPG" menu action passes no default_move_id
+        # and no active_model in context. The wizard must open cleanly with an
+        # empty move_id.
+        wizard = self.env["invoice.extract.wizard"].create({})
+        self.assertFalse(wizard.move_id)
+        self.assertEqual(wizard.state, "upload")
+
+    def test_menu_extract_uses_env_company_for_tax_match(self):
+        # Without a move_id _match_tax must fall back to self.env.company,
+        # not raise AttributeError on move_id.company_id.
+        wizard = self.env["invoice.extract.wizard"].create({
+            "attachment_data": _SAMPLE_PDF,
+            "attachment_fname": "menu_inv.pdf",
+        })
+        with patch.object(self._wizard_cls, "_call_ai_gateway", return_value=_EXTRACTION_RESULT):
+            wizard.action_extract()
+        # 20% purchase tax exists in the user's company, so each line should pick it up.
+        self.assertTrue(all(line.tax_id == self.tax_20 for line in wizard.line_ids))
+
+    def test_menu_confirm_creates_new_draft_in_invoice(self):
+        # End-to-end: menu flow creates a new draft in_invoice on Confirm and
+        # pre-fills it with the extracted data. Mirrors the bill-from-list UX.
+        wizard = self.env["invoice.extract.wizard"].create({
+            "attachment_data": _SAMPLE_PDF,
+            "attachment_fname": "menu_inv.pdf",
+        })
+        moves_before = set(self.env["account.move"].search([]).ids)
+
+        with patch.object(self._wizard_cls, "_call_ai_gateway", return_value=_EXTRACTION_RESULT):
+            wizard.action_extract()
+        action = wizard.action_confirm()
+
+        new_moves = self.env["account.move"].search([
+            ("id", "not in", list(moves_before)),
+            ("move_type", "=", "in_invoice"),
+        ])
+        self.assertEqual(len(new_moves), 1, "menu Confirm should create exactly one draft in_invoice")
+        new_move = new_moves
+        self.assertEqual(new_move.state, "draft")
+        self.assertEqual(new_move.partner_id, self.vendor)
+        self.assertEqual(new_move.ref, "INV-2026-00847")
+        self.assertEqual(action.get("res_id"), new_move.id)
+
+        product_lines = new_move.invoice_line_ids.filtered(lambda l: l.display_type == "product")
+        self.assertEqual(len(product_lines), 2)
+        for line in product_lines:
+            self.assertTrue(line.account_id, "Odoo must compute the default expense account")
+            self.assertEqual(line.account_id.account_type, "expense")
