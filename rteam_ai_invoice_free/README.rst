@@ -1,7 +1,7 @@
-Rteam AI Invoice Free
-=====================
+Rteam AI Bill Free
+==================
 
-AI-powered vendor invoice extraction from PDF and JPG files, directly inside
+AI-powered vendor bill extraction from PDF and JPG files, directly inside
 Odoo 19.
 
 Upload a scanned or digital PDF/JPG from any draft vendor bill. The Rteam AI
@@ -10,7 +10,7 @@ indicator (High / Medium / Low) is shown for each extracted field. Review the
 preview and click **Confirm** to pre-fill the draft bill.
 
 Free tier: **15 extractions per company per month**. Upgrade to Rteam AI
-Invoice Pro for unlimited use.
+Bill Pro for unlimited use.
 
 Features
 --------
@@ -25,7 +25,7 @@ Features
 - Smart tax matching: finds purchase tax by percentage rate.
 - Per-field confidence indicator derived from 0-100 AI scores.
 - Monthly quota (15/month) tracked per company; clear upgrade CTA at limit.
-- Gateway URL configurable via **Settings > Accounting > Rteam AI Invoice**.
+- Gateway URL configurable via **Settings > Accounting > Rteam AI Bill**.
 
 Configuration
 -------------

@@ -1,4 +1,4 @@
-# Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
+# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
 import logging
 
 from odoo import _, api, fields, models
@@ -11,7 +11,7 @@ _DEFAULT_LIMIT = 15
 
 class RteamAiInvoiceQuota(models.Model):
     _name = "rteam.ai.invoice.quota"
-    _description = "AI Invoice Extraction Quota"
+    _description = "AI Bill Extraction Quota"
     _rec_name = "month_key"
 
     company_id = fields.Many2one(
@@ -67,7 +67,7 @@ class RteamAiInvoiceQuota(models.Model):
             raise UserError(
                 _(
                     "You have reached the free limit of %s AI extractions this month. "
-                    "Upgrade to Rteam AI Invoice Pro for unlimited extractions.",
+                    "Upgrade to Rteam AI Bill Pro for unlimited extractions.",
                     self.extractions_limit,
                 )
             )

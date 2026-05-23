@@ -1,4 +1,4 @@
-# Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
+# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 

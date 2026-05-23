@@ -6,7 +6,7 @@
     <div style="margin-top:28px;">
       <span style="display:inline-block;color:#00D4AA;border:2px solid #00D4AA;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">FREE - LGPL-3</span>
       <span style="display:inline-block;color:#7C5CFC;border:2px solid #7C5CFC;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">Odoo 17 &middot; 18 &middot; 19</span>
-      <span style="display:inline-block;color:#0A1628;border:2px solid #0A1628;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">v1.1.0</span>
+      <span style="display:inline-block;color:#0A1628;border:2px solid #0A1628;padding:6px 14px;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.5px;margin:4px;">v1.2.0</span>
     </div>
   </div>
 </section>
@@ -21,7 +21,7 @@
 <section style="padding:32px 32px 48px;background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
   <div style="max-width:960px;margin:0 auto;">
     <h2 style="font-size:28px;color:#0A1628;margin:0 0 8px;">What it does</h2>
-    <p style="font-size:16px;color:#1a1a1a;line-height:1.65;margin:0 0 16px;">Entering vendor bills by hand means retyping the same numbers a supplier already printed on the invoice. This module reads the document and pre-fills the draft for you: vendor name and VAT, invoice number, invoice and due dates, currency, line items and totals.</p>
+    <p style="font-size:16px;color:#1a1a1a;line-height:1.65;margin:0 0 16px;">Entering vendor bills by hand means retyping the same numbers a supplier already printed on the document. This module reads the file and pre-fills the draft for you: vendor name and VAT, bill reference, bill and due dates, currency, line items and totals.</p>
     <p style="font-size:16px;color:#1a1a1a;line-height:1.65;margin:0 0 16px;">It is a <strong>review-first</strong> tool. The bill stays a draft, every field is yours to correct, and you decide when to post. The only dependency is Odoo Accounting (<code style="background:#f4f5f7;padding:2px 6px;border-radius:3px;font-size:13px;">account</code>).</p>
     <div style="background:#f4f5f7;border-left:4px solid #00D4AA;padding:18px 22px;margin:24px 0;font-size:15px;color:#0A1628;line-height:1.65;">
       Three things most extraction tools skip, included free: a <strong>confidence score on every field</strong> so you review the uncertain ones first, native <strong>Arabic / RTL</strong> invoice support, and <strong>batch upload</strong> of up to 5 documents at once. New in v1.1: a <strong>one-click entry</strong> under <em>Accounting &rarr; Vendors</em> that creates the draft bill from a PDF/JPG for you.
@@ -73,10 +73,10 @@
   <div style="max-width:960px;margin:0 auto;">
     <h2 style="font-size:28px;color:#0A1628;margin:0 0 16px;">Configuration</h2>
     <ol style="color:#1a1a1a;font-size:16px;line-height:1.7;padding-left:24px;">
-      <li style="margin:10px 0;">Apps -&gt; install <strong>Rteam AI Invoice Free</strong>. The only dependency, Odoo Accounting (<code style="background:#f4f5f7;padding:2px 6px;border-radius:3px;font-size:14px;">account</code>), is pulled automatically.</li>
+      <li style="margin:10px 0;">Apps -&gt; install <strong>Rteam AI Bill Free</strong>. The only dependency, Odoo Accounting (<code style="background:#f4f5f7;padding:2px 6px;border-radius:3px;font-size:14px;">account</code>), is pulled automatically.</li>
       <li style="margin:10px 0;">That is it. The extraction service is hosted by Rteam and works out of the box, no API key to paste, no account to create.</li>
       <li style="margin:10px 0;">Open Accounting -&gt; Vendors -&gt; Bills, create or open a draft bill and click <strong>Extract from PDF/JPG</strong>; or use Accounting -&gt; Vendors -&gt; <strong>Extract Bill from PDF/JPG</strong> to create a new draft directly from a file.</li>
-      <li style="margin:10px 0;">Accounting -&gt; Configuration -&gt; Settings -&gt; <strong>Rteam AI Invoice (Free)</strong> shows your monthly usage. Advanced users can point the gateway at their own endpoint or key here.</li>
+      <li style="margin:10px 0;">Accounting -&gt; Configuration -&gt; Settings -&gt; <strong>Rteam AI Bill (Free)</strong> shows your monthly usage. Advanced users can point the gateway at their own endpoint or key here.</li>
     </ol>
   </div>
 </section>
@@ -100,7 +100,7 @@
 <section style="padding:48px 32px;background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
   <div style="max-width:960px;margin:0 auto;">
     <h2 style="font-size:28px;color:#0A1628;margin:0 0 16px;">Free vs Pro</h2>
-    <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 20px;">This free module covers the full extract-review-confirm loop for low to moderate volume. <strong>Rteam AI Invoice Pro</strong> adds the workflow and automation that high-volume AP teams need.</p>
+    <p style="color:#1a1a1a;font-size:15px;line-height:1.65;margin:0 0 20px;">This free module covers the full extract-review-confirm loop for low to moderate volume. <strong>Rteam AI Bill Pro</strong> adds the workflow and automation that high-volume AP teams need.</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;color:#1a1a1a;">
       <tr style="background:#f4f5f7;"><th style="text-align:left;padding:10px 12px;">Capability</th><th style="text-align:left;padding:10px 12px;">Free</th><th style="text-align:left;padding:10px 12px;">Pro</th></tr>
       <tr><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">Extractions per month</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;">15 / company</td><td style="padding:8px 12px;border-bottom:1px solid #e1e4e8;color:#00D4AA;font-weight:700;">Unlimited</td></tr>

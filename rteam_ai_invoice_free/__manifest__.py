@@ -1,8 +1,8 @@
-# Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
+# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
 {
-    "name": "Rteam AI Invoice Free",
-    "version": "19.0.1.1.1",
-    "summary": "Extract vendor invoice data from PDF/JPG via AI and pre-fill a draft vendor bill.",
+    "name": "Rteam AI Bill Free",
+    "version": "19.0.1.2.0",
+    "summary": "Extract vendor bill data from PDF/JPG via AI and pre-fill a draft vendor bill.",
     "author": "Rteam",
     "website": "https://rteam.agency",
     "support": "alex@rteam.top",
