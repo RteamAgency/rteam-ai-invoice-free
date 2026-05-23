@@ -1,4 +1,4 @@
-# Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
+# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
 from odoo import api, fields, models
 
 
@@ -6,7 +6,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     rteam_ai_invoice_gateway_url = fields.Char(
-        string="AI Invoice Gateway URL",
+        string="AI Bill Gateway URL",
         config_parameter="rteam_ai_invoice.gateway_url",
     )
     rteam_ai_invoice_quota_used = fields.Integer(

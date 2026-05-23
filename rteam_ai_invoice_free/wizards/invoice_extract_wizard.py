@@ -1,4 +1,4 @@
-# Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
+# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
 import base64
 
 from odoo import _, api, fields, models
@@ -23,7 +23,7 @@ def _score_to_level(score):
 
 class InvoiceExtractWizardLine(models.TransientModel):
     _name = "invoice.extract.wizard.line"
-    _description = "AI Invoice Extraction - Line Item"
+    _description = "AI Bill Extraction - Line Item"
 
     wizard_id = fields.Many2one(
         "invoice.extract.wizard",
@@ -53,7 +53,7 @@ class InvoiceExtractWizardLine(models.TransientModel):
 
 class InvoiceExtractWizard(models.TransientModel):
     _name = "invoice.extract.wizard"
-    _description = "AI Invoice Extraction Wizard"
+    _description = "AI Bill Extraction Wizard"
 
     move_id = fields.Many2one(
         "account.move",
@@ -84,8 +84,10 @@ class InvoiceExtractWizard(models.TransientModel):
         string="Create New Vendor",
         help="No existing vendor matched; a new partner will be created on Confirm.",
     )
-    invoice_number = fields.Char(string="Invoice Number")
-    invoice_date = fields.Date(string="Invoice Date")
+    # Field names stay (DB columns + AI gateway JSON contract); user-visible
+    # labels follow Odoo's vendor-bill conventions (Bill Reference, Bill Date).
+    invoice_number = fields.Char(string="Bill Reference")
+    invoice_date = fields.Date(string="Bill Date")
     due_date = fields.Date(string="Due Date")
     currency_id = fields.Many2one("res.currency", string="Currency")
 
@@ -109,7 +111,7 @@ class InvoiceExtractWizard(models.TransientModel):
     line_ids = fields.One2many(
         "invoice.extract.wizard.line",
         "wizard_id",
-        string="Invoice Lines",
+        string="Bill Lines",
     )
 
     # -------------------------------------------------------------------------

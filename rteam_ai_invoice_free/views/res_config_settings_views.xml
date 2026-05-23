@@ -8,9 +8,9 @@
             <!-- Odoo 17/18 settings use semantic app/block/setting tags, not the
                  legacy o_settings_container div. -->
             <xpath expr="//form" position="inside">
-                <app data-string="Rteam AI Invoice" string="Rteam AI Invoice"
+                <app data-string="Rteam AI Bill" string="Rteam AI Bill"
                      name="rteam_ai_invoice_free">
-                    <block title="Rteam AI Invoice (Free)"
+                    <block title="Rteam AI Bill (Free)"
                            name="rteam_ai_invoice_settings_block">
                         <setting string="Monthly Quota"
                                  help="Extractions used this month for this company.">
@@ -22,7 +22,7 @@
                             </div>
                         </setting>
                         <setting string="Gateway URL"
-                                 help="Base URL for the Rteam AI Invoice gateway.">
+                                 help="Base URL for the Rteam AI Bill gateway.">
                             <field name="rteam_ai_invoice_gateway_url"/>
                         </setting>
                     </block>
