@@ -1,6 +1,6 @@
 # Part of Rteam AI Invoice Free. See LICENSE file for full copyright and licensing details.
 {
-    "name": "Rteam AI Invoice Free",
+    "name": "Auto Extract any Bill PDF/JPEG",
     "version": "17.0.1.1.0",
     "summary": "Extract vendor invoice data from PDF/JPG via AI and pre-fill a draft vendor bill.",
     "author": "Rteam",
