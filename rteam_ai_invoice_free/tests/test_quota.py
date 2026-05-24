@@ -1,4 +1,4 @@
-# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
+# Part of Auto Extract any Bill PDF/JPEG. See LICENSE file for full copyright and licensing details.
 from psycopg2 import IntegrityError
 
 from odoo.exceptions import UserError

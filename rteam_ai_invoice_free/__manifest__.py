@@ -1,7 +1,7 @@
-# Part of Rteam AI Bill Free. See LICENSE file for full copyright and licensing details.
+# Part of Auto Extract any Bill PDF/JPEG. See LICENSE file for full copyright and licensing details.
 {
-    "name": "Rteam AI Bill Free",
-    "version": "18.0.1.2.0",
+    "name": "Auto Extract any Bill PDF/JPEG",
+    "version": "18.0.1.2.2",
     "summary": "Extract vendor bill data from PDF/JPG via AI and pre-fill a draft vendor bill.",
     "author": "Rteam",
     "website": "https://rteam.agency",
