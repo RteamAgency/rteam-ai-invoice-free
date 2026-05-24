@@ -1,5 +1,5 @@
 Auto Extract any Bill PDF/JPEG
-==================
+==============================
 
 AI-powered vendor bill extraction from PDF and JPG files, directly inside
 Odoo 17.
