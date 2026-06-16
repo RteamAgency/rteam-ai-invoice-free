@@ -50,6 +50,16 @@ def _guess_mime(filename: str, file_bytes: bytes) -> str:
     return "application/octet-stream"
 
 
+def is_supported_upload(filename: str, file_bytes: bytes) -> bool:
+    """True when the upload looks like a file the gateway can extract.
+
+    Used by the on-the-fly decoder (native "Upload Bill" flow) to decide whether
+    to offer AI extraction for an uploaded attachment. Mirrors the gateway's own
+    accepted types, so we never offer the decoder for a file it would reject.
+    """
+    return _guess_mime(filename, file_bytes) in _SUPPORTED_MIME
+
+
 def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
     """POST file_bytes to the Rteam AI Invoice gateway and return the extraction dict.
 
