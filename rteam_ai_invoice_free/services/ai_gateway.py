@@ -12,7 +12,10 @@ _logger = logging.getLogger(__name__)
 
 _DEFAULT_GATEWAY_URL = "https://rteam.agency"
 _GATEWAY_PARAM = "rteam_ai_invoice.gateway_url"
-_TIMEOUT_SECONDS = 30
+# A large multi-row order form / price list makes the model generate many output
+# tokens, which can take well over 30s end to end; a short timeout surfaced as a
+# urllib read-timeout (HTTP 500 on the wizard). 120s covers the slow tail.
+_TIMEOUT_SECONDS = 120
 _XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 _CSV_MIME = "text/csv"
 _SUPPORTED_MIME = ("application/pdf", "image/jpeg", "image/png", _XLSX_MIME, _CSV_MIME)
