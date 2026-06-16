@@ -25,16 +25,15 @@ _EXTRACTION_RESULT = {
 @tagged("post_install", "-at_install")
 class TestAutoDecode(TransactionCase):
     """The native 'Upload Bill' / drag-drop flow routes the file through
-    account.move._get_edi_decoder; our AI decoder must pre-fill the bill on
-    the fly without a wizard."""
+    account.move._extend_with_attachments; we claim supported uploads there so
+    our AI decoder pre-fills the bill on the fly, outranking the enterprise OCR."""
 
     def setUp(self):
         super().setUp()
         self.company = self.env.company
-        journal = self.env["account.journal"].search(
+        self.journal = self.env["account.journal"].search(
             [("type", "=", "purchase"), ("company_id", "=", self.company.id)], limit=1
         )
-        self.journal = journal
         self.vendor = self.env["res.partner"].create(
             {"name": "Schneider Electric SA", "vat": "FR40542065479", "is_company": True, "supplier_rank": 1}
         )
@@ -44,42 +43,68 @@ class TestAutoDecode(TransactionCase):
         self.move_cls = self.env["account.move"].__class__
 
     def _new_bill(self, move_type="in_invoice"):
+        jtype = "sale" if move_type in ("out_invoice", "out_refund") else "purchase"
+        journal = self.journal
+        if jtype == "sale":
+            journal = self.env["account.journal"].search(
+                [("type", "=", "sale"), ("company_id", "=", self.company.id)], limit=1
+            )
         return self.env["account.move"].create(
-            {"move_type": move_type, "journal_id": self.journal.id, "company_id": self.company.id}
+            {"move_type": move_type, "journal_id": journal.id, "company_id": self.company.id}
         )
 
     def _file_data(self, raw=_PDF_BYTES, name="invoice.pdf", mimetype="application/pdf"):
         return {"raw": raw, "name": name, "mimetype": mimetype}
 
     # ------------------------------------------------------------------
-    # Decoder registration
+    # Claim logic: which uploads we assign our decoder to
     # ------------------------------------------------------------------
-    def test_offers_decoder_for_supported_vendor_bill(self):
+    def test_claims_supported_vendor_bill_at_priority_15(self):
         move = self._new_bill()
-        decoder = move._get_edi_decoder(self._file_data())
-        self.assertTrue(decoder, "AI decoder should be offered for a plain PDF bill")
-        self.assertEqual(decoder["priority"], 10)
+        fd = self._file_data()
+        move._rteam_ai_claim_attachments([fd])
+        self.assertIn("decoder_info", fd, "a plain PDF on an empty bill should be claimed")
+        self.assertEqual(fd["decoder_info"]["priority"], 15, "must outrank OCR (10) and lose to EDI (20)")
 
-    def test_does_not_offer_for_customer_invoice(self):
+    def test_claims_xlsx_upload(self):
+        move = self._new_bill()
+        fd = self._file_data(raw=b"PK\x03\x04xlsxdata", name="order.xlsx", mimetype="application/octet-stream")
+        move._rteam_ai_claim_attachments([fd])
+        self.assertIn("decoder_info", fd)
+
+    def test_does_not_claim_customer_invoice(self):
         move = self._new_bill(move_type="out_invoice")
-        self.assertFalse(move._get_edi_decoder(self._file_data()))
+        fd = self._file_data()
+        move._rteam_ai_claim_attachments([fd])
+        self.assertNotIn("decoder_info", fd)
 
-    def test_does_not_offer_when_bill_already_has_lines(self):
+    def test_does_not_claim_when_bill_already_has_lines(self):
         move = self._new_bill()
         move.write({"invoice_line_ids": [(0, 0, {"display_type": "product", "name": "x", "quantity": 1, "price_unit": 5})]})
-        self.assertFalse(move._get_edi_decoder(self._file_data()))
+        fd = self._file_data()
+        move._rteam_ai_claim_attachments([fd])
+        self.assertNotIn("decoder_info", fd)
 
-    def test_does_not_offer_for_unsupported_file(self):
+    def test_does_not_claim_unsupported_file(self):
         move = self._new_bill()
-        self.assertFalse(move._get_edi_decoder(self._file_data(raw=b"PK\x03\x04zipdata", name="archive.zip", mimetype="application/zip")))
+        fd = self._file_data(raw=b"PK\x03\x04zipdata", name="archive.zip", mimetype="application/zip")
+        move._rteam_ai_claim_attachments([fd])
+        self.assertNotIn("decoder_info", fd)
+
+    def test_does_not_override_existing_decoder(self):
+        move = self._new_bill()
+        fd = self._file_data()
+        fd["decoder_info"] = {"priority": 20, "decoder": lambda *a: None}  # e.g. a structured-EDI claim
+        move._rteam_ai_claim_attachments([fd])
+        self.assertEqual(fd["decoder_info"]["priority"], 20, "must not clobber a higher-priority EDI decoder")
 
     # ------------------------------------------------------------------
-    # Decoder execution
+    # Execution: the decoder fills the bill / fails cleanly
     # ------------------------------------------------------------------
     def test_decoder_fills_bill_in_place(self):
         move = self._new_bill()
         with patch.object(self.move_cls, "_rteam_ai_call_gateway", return_value=_EXTRACTION_RESULT):
-            reason = move._get_edi_decoder(self._file_data())["decoder"](move, self._file_data(), True)
+            reason = move._rteam_ai_apply_attachment(self._file_data())
         self.assertIsNone(reason, "successful decode returns None")
         self.assertEqual(move.partner_id, self.vendor)
         self.assertEqual(move.ref, "INV-2026-00847")
@@ -114,6 +139,5 @@ class TestAutoDecode(TransactionCase):
         move = self._new_bill()
         quota = self.env["rteam.ai.invoice.quota"]._get_or_create_for_company()
         quota.write({"extractions_used": 5, "extractions_limit": 5})
-        # No gateway patch needed: check_quota raises before any network call.
         reason = move._rteam_ai_apply_attachment(self._file_data())
         self.assertTrue(reason)

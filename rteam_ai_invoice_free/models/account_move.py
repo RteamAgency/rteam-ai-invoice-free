@@ -7,21 +7,21 @@ from ..services.ai_gateway import is_supported_upload, rteam_ai_extract
 # Vendor documents only - we never touch customer invoices / receipts.
 _VENDOR_TYPES = ("in_invoice", "in_refund")
 
-# Native + structured-EDI decoders (UBL / Factur-X / CII) return priority 20 and
-# must keep winning: a real e-invoice is authoritative. Our AI is the fallback for
-# plain scans / spreadsheets, so it offers a lower priority. The highest priority
-# decoder across all attachments is the one Odoo runs.
-_RTEAM_DECODER_PRIORITY = 10
+# Priority of our AI decoder in the document-import contest. It must beat the
+# enterprise OCR (account_invoice_extract: priority 10 for pdf, 5 otherwise) so
+# the free Claude extraction wins on the native "Upload Bill" flow, yet stay
+# below a structured e-invoice (UBL / Factur-X / CII = 20), which is machine
+# authoritative and needs no AI. On Community there is no competitor at all.
+_RTEAM_DECODER_PRIORITY = 15
 
 
 def _rteam_ai_decode(record, file_data, new):
-    """Decoder callable registered via ``_get_edi_decoder``.
+    """Decoder callable selected by ``_extend_with_attachments``.
 
-    Invoked by ``account.document.import.mixin._extend_with_attachments`` as
-    ``decoder(record, file_data, new)``. Returns ``None`` on success or a short
-    reason string on failure; a returned reason makes the mixin roll back any
-    partial write, so a gateway error leaves the draft bill with just its
-    attachment (the user can still retry via the wizard).
+    Invoked as ``decoder(record, file_data, new)``. Returns ``None`` on success
+    or a short reason string on failure; a returned reason makes the import mixin
+    roll back any partial write, so a gateway error leaves the draft bill with
+    just its attachment (the user can still retry via the wizard).
     """
     return record._rteam_ai_apply_attachment(file_data)
 
@@ -43,26 +43,39 @@ class AccountMove(models.Model):
 
     # -------------------------------------------------------------------------
     # On-the-fly extraction: the native "Upload Bill" button (on a PO or in the
-    # Bills list) and drag-and-drop both route the uploaded file through the
-    # document-import mixin. We register an AI decoder there so the bill is
-    # pre-filled the moment the file lands, with no second click or re-upload.
+    # Bills list) and drag-and-drop route the uploaded file through the document
+    # import mixin's _extend_with_attachments. We claim supported uploads for our
+    # AI decoder there - rather than via _get_edi_decoder - because the enterprise
+    # OCR override sits above us in the MRO and short-circuits _get_edi_decoder for
+    # pdf/jpg/png without calling super(), which would hide our decoder. Nothing
+    # overrides _extend_with_attachments, so this interception is MRO-proof.
     # -------------------------------------------------------------------------
-    def _get_edi_decoder(self, file_data, new=False):
-        # Defer to any native / structured-EDI decoder first; only step in when
-        # nothing else claims the file. Pure fallback, independent of MRO order.
-        decoder = super()._get_edi_decoder(file_data, new=new)
-        if decoder:
-            return decoder
+    def _extend_with_attachments(self, files_data, new=False):
+        self._rteam_ai_claim_attachments(files_data)
+        return super()._extend_with_attachments(files_data, new=new)
+
+    def _rteam_ai_claim_attachments(self, files_data):
+        """Pre-assign our AI decoder to each supported upload on an empty vendor bill.
+
+        Setting ``file_data['decoder_info']`` makes the base mixin skip its own
+        ``_get_edi_decoder`` lookup for that file and use ours, at a priority that
+        outranks the OCR but not a structured e-invoice. A bill that already
+        carries lines (e.g. created from a PO) is left untouched.
+        """
         if self.move_type not in _VENDOR_TYPES:
-            return decoder
-        # Do not clobber a bill that already carries lines (e.g. created from a PO).
+            return
         if self.invoice_line_ids.filtered(lambda line: line.display_type == "product"):
-            return decoder
-        raw = file_data.get("raw")
-        name = file_data.get("name") or ""
-        if not raw or not is_supported_upload(name, raw):
-            return decoder
-        return {"priority": _RTEAM_DECODER_PRIORITY, "decoder": _rteam_ai_decode}
+            return
+        for file_data in files_data:
+            if "decoder_info" in file_data:
+                continue
+            raw = file_data.get("raw")
+            name = file_data.get("name") or ""
+            if raw and is_supported_upload(name, raw):
+                file_data["decoder_info"] = {
+                    "priority": _RTEAM_DECODER_PRIORITY,
+                    "decoder": _rteam_ai_decode,
+                }
 
     def _rteam_ai_call_gateway(self, file_bytes, filename):
         """Single gateway call - patch this in tests to avoid network access."""
