@@ -79,10 +79,15 @@ class TestGatewayClient(TransactionCase):
         self.assertEqual(result["vendor"]["name"], "ACME")
 
     def test_mime_detected_from_magic_bytes_and_extension(self):
+        xlsx_mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         cases = [
             (b"%PDF-1.7\n...", "scan.pdf", "application/pdf"),
             (b"\xff\xd8\xff\xe0junk", "photo.bin", "image/jpeg"),
             (b"\x89PNG\r\n\x1a\nrest", "x", "image/png"),
+            # XLSX is a ZIP (PK) container; keyed off the .xlsx extension.
+            (b"PK\x03\x04rest", "order.xlsx", xlsx_mime),
+            # CSV has no magic bytes; keyed off the .csv extension.
+            (b"Product,Qty\nLash,2", "order.csv", "text/csv"),
         ]
         for data, fname, expected in cases:
             captured = {}

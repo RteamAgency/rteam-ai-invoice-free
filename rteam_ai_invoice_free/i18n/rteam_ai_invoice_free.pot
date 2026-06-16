@@ -36,7 +36,7 @@ msgstr ""
 msgid "You have reached the free limit of %s AI extractions this month. Upgrade to Rteam AI Invoice Pro for unlimited extractions."
 msgstr ""
 
-msgid "Please upload a PDF or JPG file before extracting."
+msgid "Please upload a PDF, image, Excel or CSV file before extracting."
 msgstr ""
 
 msgid "Please run extraction before confirming."
