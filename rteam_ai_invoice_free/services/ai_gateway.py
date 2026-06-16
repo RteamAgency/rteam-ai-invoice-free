@@ -12,16 +12,25 @@ _logger = logging.getLogger(__name__)
 
 _DEFAULT_GATEWAY_URL = "https://rteam.agency"
 _GATEWAY_PARAM = "rteam_ai_invoice.gateway_url"
-_TIMEOUT_SECONDS = 30
-_SUPPORTED_MIME = ("application/pdf", "image/jpeg", "image/png")
+# A large multi-row order form / price list makes the model generate many output
+# tokens, which can take well over 30s end to end; a short timeout surfaced as a
+# urllib read-timeout (HTTP 500 on the wizard). 120s covers the slow tail.
+_TIMEOUT_SECONDS = 120
+_XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+_CSV_MIME = "text/csv"
+_SUPPORTED_MIME = ("application/pdf", "image/jpeg", "image/png", _XLSX_MIME, _CSV_MIME)
 
 
 def _guess_mime(filename: str, file_bytes: bytes) -> str:
     """Resolve the upload's MIME type for the multipart Content-Type.
 
     The gateway validates the declared type and rejects application/octet-stream,
-    so we must send the real one. Magic bytes are authoritative (the binary
-    widget's filename can be missing or generic); fall back to the extension.
+    so we must send the real one. Magic bytes are authoritative for the binary
+    formats (the widget's filename can be missing or generic). XLSX is a ZIP
+    container (PK header) shared with docx/zip, so it is disambiguated by the
+    .xlsx extension; CSV has no reliable magic and is keyed off the extension too.
+    A Google Sheet is uploaded as its XLSX or CSV export, so it needs no special
+    handling here.
     """
     head = file_bytes[:8]
     if head[:5] == b"%PDF-":
@@ -30,10 +39,25 @@ def _guess_mime(filename: str, file_bytes: bytes) -> str:
         return "image/jpeg"
     if head == b"\x89PNG\r\n\x1a\n":
         return "image/png"
-    guess = mimetypes.guess_type(filename or "")[0]
+    name = (filename or "").lower()
+    if name.endswith(".xlsx") and head[:2] == b"PK":
+        return _XLSX_MIME
+    if name.endswith(".csv"):
+        return _CSV_MIME
+    guess = mimetypes.guess_type(name)[0]
     if guess in _SUPPORTED_MIME:
         return guess
     return "application/octet-stream"
+
+
+def is_supported_upload(filename: str, file_bytes: bytes) -> bool:
+    """True when the upload looks like a file the gateway can extract.
+
+    Used by the on-the-fly decoder (native "Upload Bill" flow) to decide whether
+    to offer AI extraction for an uploaded attachment. Mirrors the gateway's own
+    accepted types, so we never offer the decoder for a file it would reject.
+    """
+    return _guess_mime(filename, file_bytes) in _SUPPORTED_MIME
 
 
 def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
