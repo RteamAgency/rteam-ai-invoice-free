@@ -10,12 +10,12 @@
     "category": "Accounting/Accounting",
     "depends": ["account"],
     "data": [
-        "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
         "data/ir_cron.xml",
         "views/account_move_views.xml",
         "views/wizard_views.xml",
         "views/res_config_settings_views.xml",
+        'security/ir.access.csv',
     ],
     "images": ["static/description/banner.png"],
     "installable": True,

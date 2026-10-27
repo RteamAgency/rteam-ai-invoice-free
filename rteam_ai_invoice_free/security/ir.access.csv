@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_rteam_ai_invoice_quota_user,rteam.ai.invoice.quota user,rteam.ai.invoice.quota,account.group_account_invoice,cru,
+access_rteam_ai_invoice_quota_manager,rteam.ai.invoice.quota manager,rteam.ai.invoice.quota,account.group_account_manager,crud,
+access_invoice_extract_wizard_user,invoice.extract.wizard user,invoice.extract.wizard,account.group_account_invoice,crud,
+access_invoice_extract_wizard_line_user,invoice.extract.wizard.line user,invoice.extract.wizard.line,account.group_account_invoice,crud,
