@@ -48,7 +48,7 @@ class TestGatewayClient(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        self.env["ir.config_parameter"].sudo().set_param(
+        self.env["ir.config_parameter"].sudo().set_str(
             "rteam_ai_invoice.gateway_url", "https://gw.example.test/")
 
     def test_happy_path_reads_config_and_parses(self):
@@ -68,7 +68,7 @@ class TestGatewayClient(TransactionCase):
         self.assertEqual(
             captured["url"], "https://gw.example.test/api/rteam-ai-invoice/extract")
         # database.uuid + installed module version lookups ran on the real path
-        expected_uuid = self.env["ir.config_parameter"].sudo().get_param("database.uuid", "")
+        expected_uuid = self.env["ir.config_parameter"].sudo().get_str("database.uuid")
         self.assertEqual(captured["db_header"], expected_uuid)
         self.assertTrue(captured["has_version_header"])
         # the multipart part must declare the real MIME, not application/octet-stream,

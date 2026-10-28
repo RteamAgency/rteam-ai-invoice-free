@@ -102,12 +102,12 @@ def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
     file_bytes, filename = _normalize_upload(filename, file_bytes)
 
     config = env["ir.config_parameter"].sudo()
-    base_url = (config.get_param(_GATEWAY_PARAM, _DEFAULT_GATEWAY_URL)).rstrip("/")
+    base_url = config.get_str(_GATEWAY_PARAM, _DEFAULT_GATEWAY_URL).rstrip("/")
     url = "%s/api/rteam-ai-invoice/extract" % base_url
 
     # database.uuid identifies this Odoo DB to the gateway's per-DB monthly quota
     # (anti-abuse backstop). Stable per database, not secret.
-    db_uuid = config.get_param("database.uuid", "")
+    db_uuid = config.get_str("database.uuid")
     module = (
         env["ir.module.module"].sudo()
         .search([("name", "=", "rteam_ai_invoice_free")], limit=1)

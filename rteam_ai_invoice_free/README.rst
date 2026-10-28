@@ -2,7 +2,7 @@ Auto Extract any Bill PDF/JPEG
 ==============================
 
 AI-powered vendor bill extraction from PDF and JPG files, directly inside
-Odoo 19.
+Odoo 20.
 
 Upload a scanned or digital PDF/JPG from any draft vendor bill. The Rteam AI
 gateway extracts vendor details, dates, currency, and line items. A confidence
@@ -41,7 +41,7 @@ Technical
 ---------
 
 - Technical name: ``rteam_ai_invoice_free``
-- Target Odoo version: 19.0
+- Target Odoo version: 20.0
 - License: LGPL-3
 - Gateway call uses Python stdlib ``urllib.request`` (no extra dependencies).
 - Single mock boundary: ``InvoiceExtractWizard._call_ai_gateway(file_bytes, filename)``.
