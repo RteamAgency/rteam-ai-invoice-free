@@ -1,5 +1,4 @@
 # Part of Auto Extract any Bill PDF/JPEG. See LICENSE file for full copyright and licensing details.
-import base64
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -172,7 +171,9 @@ class InvoiceExtractWizard(models.TransientModel):
                 _("Please upload a PDF, image, Excel or CSV file before extracting.")
             )
 
-        file_bytes = base64.b64decode(self.attachment_data)
+        # Odoo 20 keeps a binary field's raw content (a BinaryValue); up to
+        # 19.0 the value was base64 and had to be decoded here.
+        file_bytes = self.attachment_data.content
         filename = self.attachment_fname or "invoice.pdf"
 
         quota = self.env["rteam.ai.invoice.quota"]._get_or_create_for_company()
