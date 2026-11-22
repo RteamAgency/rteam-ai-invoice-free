@@ -1,8 +1,8 @@
-# Part of Auto Extract any Bill PDF/JPEG. See LICENSE file for full copyright and licensing details.
+# Part of Auto Extract any Bill PDF/Image/Excel. See LICENSE file for full copyright and licensing details.
 {
-    "name": "Auto Extract any Bill PDF/JPEG",
-    "version": "17.0.1.2.2",
-    "summary": "Extract vendor bill data from PDF/JPG via AI and pre-fill a draft vendor bill.",
+    "name": "Auto Extract any Bill PDF/Image/Excel",
+    "version": "17.0.1.5.0",
+    "summary": "Extract vendor bill data from PDF, image, Excel, CSV or Google Sheets via AI and pre-fill a draft vendor bill.",
     "author": "Rteam",
     "website": "https://rteam.agency",
     "support": "alex@rteam.top",

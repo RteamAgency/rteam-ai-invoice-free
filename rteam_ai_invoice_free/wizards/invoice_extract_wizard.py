@@ -73,7 +73,7 @@ class InvoiceExtractWizard(models.TransientModel):
     )
 
     # File upload
-    attachment_data = fields.Binary(string="PDF / JPG File", attachment=False)
+    attachment_data = fields.Binary(string="Invoice File", attachment=False)
     attachment_fname = fields.Char(string="Filename")
 
     # Extracted header fields
@@ -168,7 +168,9 @@ class InvoiceExtractWizard(models.TransientModel):
         """Call the AI gateway, populate preview fields, and return to the same wizard."""
         self.ensure_one()
         if not self.attachment_data:
-            raise UserError(_("Please upload a PDF or JPG file before extracting."))
+            raise UserError(
+                _("Please upload a PDF, image, Excel or CSV file before extracting.")
+            )
 
         file_bytes = base64.b64decode(self.attachment_data)
         filename = self.attachment_fname or "invoice.pdf"
