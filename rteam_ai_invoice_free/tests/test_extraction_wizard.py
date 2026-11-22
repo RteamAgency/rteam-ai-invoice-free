@@ -89,6 +89,17 @@ class TestInvoiceExtractWizard(TransactionCase):
     # Successful extraction + confirm
     # ------------------------------------------------------------------
 
+    def test_action_extract_sends_the_uploaded_bytes(self):
+        sent = {}
+
+        def _fake_gateway(wizard, file_bytes, filename):
+            sent["bytes"], sent["filename"] = file_bytes, filename
+            return _EXTRACTION_RESULT
+
+        with patch.object(self._wizard_cls, "_call_ai_gateway", autospec=True, side_effect=_fake_gateway):
+            self.wizard.action_extract()
+        self.assertEqual(sent["bytes"], b"%PDF-1.4 fake content")
+
     def test_action_extract_populates_wizard(self):
         with patch.object(self._wizard_cls, "_call_ai_gateway", return_value=_EXTRACTION_RESULT):
             self.wizard.action_extract()
