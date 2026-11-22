@@ -8,6 +8,8 @@ import urllib.request
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
 
+from .signed_container import looks_like_signed_container, unwrap_signed_document
+
 _logger = logging.getLogger(__name__)
 
 _DEFAULT_GATEWAY_URL = "https://rteam.agency"
@@ -50,13 +52,39 @@ def _guess_mime(filename: str, file_bytes: bytes) -> str:
     return "application/octet-stream"
 
 
+def _normalize_upload(filename: str, file_bytes: bytes):
+    """Return (file_bytes, filename) with any signature envelope unwrapped.
+
+    Bank documents often arrive as a PKCS#7 / CAdES (КЕП) container that keeps a
+    ``.pdf`` name but is not a PDF. We unwrap to the embedded document so both the
+    type detection and the gateway see real bytes. A non-container is returned
+    unchanged. When we unwrap a PDF we also normalise the name to ``.pdf`` so the
+    gateway's extension check matches the content.
+    """
+    if not looks_like_signed_container(file_bytes):
+        return file_bytes, filename
+    embedded = unwrap_signed_document(file_bytes)
+    if not embedded:
+        return file_bytes, filename
+    _logger.info(
+        "Unwrapped signed container %r: %d bytes -> %d bytes",
+        filename, len(file_bytes), len(embedded),
+    )
+    new_name = filename or "invoice"
+    if embedded[:5] == b"%PDF-" and not new_name.lower().endswith(".pdf"):
+        new_name = "%s.pdf" % new_name
+    return embedded, new_name
+
+
 def is_supported_upload(filename: str, file_bytes: bytes) -> bool:
     """True when the upload looks like a file the gateway can extract.
 
     Used by the on-the-fly decoder (native "Upload Bill" flow) to decide whether
     to offer AI extraction for an uploaded attachment. Mirrors the gateway's own
     accepted types, so we never offer the decoder for a file it would reject.
+    A signed container is judged by the document it carries, not the envelope.
     """
+    file_bytes, filename = _normalize_upload(filename, file_bytes)
     return _guess_mime(filename, file_bytes) in _SUPPORTED_MIME
 
 
@@ -68,6 +96,11 @@ def rteam_ai_extract(env, file_bytes: bytes, filename: str) -> dict:
 
     Raises UserError on any network or API error so the caller never sees a bare exception.
     """
+    # Unwrap a PKCS#7 / CAdES (КЕП) signature envelope to the document it carries
+    # before anything else, so a signed bank receipt is sent as a real PDF rather
+    # than as the crypto container the gateway cannot read.
+    file_bytes, filename = _normalize_upload(filename, file_bytes)
+
     config = env["ir.config_parameter"].sudo()
     base_url = (config.get_param(_GATEWAY_PARAM, _DEFAULT_GATEWAY_URL)).rstrip("/")
     url = "%s/api/rteam-ai-invoice/extract" % base_url
